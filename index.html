@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .timer {
+            height: 100vh;
+            width: 100%;
+            background: cadetblue;
+            overflow: hidden;
+        }
+
+        input {
+            height: 6vh;
+            width: 100%;
+        }
+
+        .timerButton {
+            height: 6vh;
+            width: 13%;
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 0px;
+        }
+
+        #form {
+            display: inline-block;
+            float: right;
+        }
+
+        .display {
+            position: absolute;
+            top: 50%;
+            left: 39%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="timer">
+        <div class="timer-control">
+            <button data-time="20" class="timerButton">20 sec</button>
+            <button data-time="300" class="timerButton"> 5 mins </button>
+            <button data-time="900" class="timerButton">15 mins</button>
+            <button data-time="120" class="timerButton">2 mins</button>
+            <form name="coustomForm" id="form">
+                <input type="text" placeholder="enterMin" name="minutes">
+            </form>
+        </div>
+        <div class="display">
+            <h1 class="timeLeft"></h1>
+            <p class="endTime"></p>
+        </div>
+    </div>
+
+
+    <script>
+        let countDown;
+        const timerdisplay = document.querySelector(".timeLeft");
+        const endTime = document.querySelector(".endTime");
+        const buttons = document.querySelectorAll("[data-time]");
+        function timer(seconds) {
+            clearInterval(countDown);
+            const now = Date.now();
+            const then = now + seconds * 1000;
+            displayTimeLeft(seconds)
+            displayEndTime(then);
+            // console.log(then)
+            countDown = setInterval(() => {
+                const secondLeft = Math.round((then - Date.now()) / 1000);
+                if (secondLeft <= 0) {
+                    clearInterval(countDown);
+                    return;
+                }
+                displayTimeLeft(secondLeft)
+
+            }, 1000)
+        }
+
+        function displayTimeLeft(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const reminderSecond = seconds % 60;
+            const display = `${mins}:${reminderSecond < 10 ? "0" : ""}${reminderSecond}`;
+            timerdisplay.textContent = display;
+            document.title = display;
+            // console.log({ mins, reminderSecond });
+        }
+        function displayEndTime(backtime) {
+            const date = new Date(backtime);
+            const mins = date.getMinutes();
+            const hour = date.getHours();
+            const adjust = hour > 12 ? hour - 12 : hour;
+            endTime.textContent = `BE BACK AT ${adjust}:${mins < 10 ? "0" : ""}${mins}`
+        }
+        function startTimer() {
+            const seconds = this.dataset.time;
+            timer(seconds)
+        }
+        buttons.forEach(button => button.addEventListener("click", startTimer))
+        document.coustomForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            const mins = this.minutes.value;
+            timer(mins * 60);
+            this.reset();
+        })
+    </script>
+</body>
+
+</html>
